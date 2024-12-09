@@ -30,6 +30,15 @@ LimpiarPantalla MACRO color
 	int 10h
 ENDM
 
+Barra MACRO Color, EsqIni, EsqFin
+        mov ah, 06h
+        mov al, 00h
+        mov bh, Color
+        mov cx, EsqIni
+        mov dx, EsqFin
+        int 10h    
+    ENDM
+
 .MODEL Large
 .STACK 100h
 
@@ -52,6 +61,23 @@ daniel db 'Sergio Daniel Chiquito Zu', 00F1h ,'iga$'
 programa db 'Programa Tope de Power$'
 tecla db 'Pulse cualquier tecla para continuar...$'
 volver_menu db 'Z) VOLVER AL MEN',00E9h,' PRINCIPAL$'
+bienvenidoColorear db '----------------BIENVENIDO A DIBUJAR A STEVE--------------------$'
+opcionesCabello db '¿Que color de pelo deseas?$'
+azulCabello db 'a) Azul$'
+moradoCabello db 'b) Morado$'
+negroCabello db 'c) Negro$'
+
+opcionesPlayera db '¿Que color de playera deseas?$'
+opcPlayera1 db 'a) Negro$'
+opcPlayera2 db 'b) Cyan$'
+opcPlayera3 db 'c) Rojo$'
+
+volverDibujar db 'Quieres volver a dibujar? (S/N)$'
+
+opcionesPantalon db '¿Que color de pantalon deseas?$'
+opcPantalon1 db 'a) Morado$'
+opcPantalon2 db 'b) Azul$'
+opcPantalon3 db 'c) Blanco$'
 
 gatitoLinea1 db '     /\_/\        ', 0Dh, 0Ah, '$'
 gatitoLinea2 db '    ( o.o )      ', 0Dh, 0Ah, '$'
@@ -61,6 +87,10 @@ gatitoLinea5 db '   /       \    ', 0Dh, 0Ah, '$'
 gatitoLinea6 db '   |       |   ', 0Dh, 0Ah, '$'
 gatitoLinea7 db '    \     /    ', 0Dh, 0Ah, '$'
 gatitoLinea8 db '     \_/     ', 0Dh, 0Ah, '$'
+
+colorCabello db 0
+colorPlayera db 0
+colorPantalon db 0
 
 .CODE
 inicio:
@@ -125,12 +155,19 @@ esperar_tecla:
 	je dibujar
 	cmp al, 'a'
 	je dibujar
+	cmp al, 'B';
+	je steve2
+	cmp al, 'b'
+	je steve2
 	cmp al, 'x'
 	je EXIT_CONTINUE
 	cmp al, 'X'
 	je EXIT_CONTINUE
 	jmp esperar_tecla
-	
+
+steve2:
+	jmp STEVE_DIBUJO
+
 EXIT_CONTINUE:
 	jmp EXIT
 	
@@ -159,8 +196,6 @@ dibujarTriangulo:
 	mov ah, 00h
 	int 16h
 	JMP dibujar
-	
-	
 linea2:
 	inc dx
 	int 10h
@@ -173,6 +208,121 @@ linea2:
 
 MENU2_CONTINUE:
 	jmp MENU2
+
+STEVE_DIBUJO:
+	LimpiarPantalla 47h
+	Imprimir 8,10, bienvenidoColorear
+	Imprimir 10,10, opcionesCabello
+	Imprimir 12,10, azulCabello
+	Imprimir 14,10, moradoCabello
+	Imprimir 16,10, negroCabello
+volver1:
+	mov ah, 00h
+	int 16h
+	cmp al, 'a'
+	je cabello_azul
+	cmp al, 'b'
+	je cabello_morado
+	cmp al, 'c'
+	je cabello_negro
+	jmp volver1
+	cabello_azul:
+	mov colorCabello, 10h
+	jmp siguiente
+	cabello_morado:
+	mov colorCabello, 50h
+	jmp siguiente
+	cabello_negro:
+	mov colorCabello, 00h
+	jmp siguiente
+siguiente:
+	LimpiarPantalla 57h
+	Imprimir 8,10, bienvenidoColorear
+	Imprimir 10,10, opcionesPlayera
+	Imprimir 12,10, opcPlayera1
+	Imprimir 14,10, opcPlayera2
+	Imprimir 16,10, opcPlayera3
+volver2:
+	mov ah, 00h
+	int 16h
+	cmp al, 'a'
+	je playera_negro
+	cmp al, 'b'
+	je playera_cyan
+	cmp al, 'c'
+	je playera_rojo
+	jmp volver2
+
+	playera_negro:
+	mov colorPlayera, 00h
+	jmp siguiente2
+
+	playera_cyan:
+	mov colorPlayera, 30h
+	jmp siguiente2
+
+	playera_rojo:
+	mov colorPlayera, 40h
+	jmp siguiente2
+siguiente2:
+	LimpiarPantalla 17h
+	Imprimir 8,10, bienvenidoColorear
+	Imprimir 10,10, opcionesPantalon
+	Imprimir 12,10, opcPantalon1
+	Imprimir 14,10, opcPantalon2
+	Imprimir 16,10, opcPantalon3
+volver3:
+	mov ah, 00h
+	int 16h
+	cmp al, 'a'
+	je pantalon_morado
+	cmp al, 'b'
+	je pantalon_azul
+	cmp al, 'c'
+	je pantalon_blanco
+	jmp volver3
+
+	pantalon_morado:
+	mov colorPantalon, 50h
+	jmp fin
+
+	pantalon_azul:
+	mov colorPantalon, 10h
+	jmp fin
+
+	pantalon_blanco:
+	mov colorPantalon, 70h
+	jmp fin
+
+fin:
+	LimpiarPantalla 77h
+	Barra 20H, 1200h, 18AFh
+	Barra 60h, 0B43h, 1346h
+	Barra 20h, 093Dh, 0A4Bh
+	Barra 20h, 073Fh, 0849h
+	Barra 20h, 0541h, 0647h
+	Barra colorPantalon, 111Eh, 1525h
+	Barra 60h, 161Eh, 1625h
+	Barra colorPlayera, 0A1Eh, 1025h
+	Barra colorPlayera, 0A1Ah, 0B29h
+	Barra 60h, 0C1Ah, 101Dh
+	Barra 60h, 0C26h, 1029h
+	Barra 60h, 051Eh, 0925h
+	Barra colorCabello, 051Eh, 0525h
+	Barra colorCabello, 051Eh, 061Eh
+	Barra colorCabello, 0525h, 0625h
+	Barra 70h, 0720h, 0723h
+	Barra 00h, 0721h, 0721h
+	Barra 00h, 0723h, 0723h
+	Barra 00h, 0921h, 0922h
+	Imprimir 23,10, volverDibujar
+	mov ah, 00h
+	int 16h
+	cmp al, 's'
+	je dibujarVolver
+	jmp MENU2_CONTINUE;
+dibujarVolver:
+	jmp STEVE_DIBUJO
 	
 EXIT:
 	mov AX, 4c00h
