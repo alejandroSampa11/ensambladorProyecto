@@ -53,6 +53,7 @@ figuras db 'a) DIBUJAR FIGURAS$'
 figura1 db 'a) DIBUJAR TRIANGULO$'
 figura2 db 'b) DIBUJAR CUADRADO$'
 figura3 db 'c) DIBUJAR RECTANGULO$'
+figura4 db 'd) DIBUJAR ROMBO$'
 colorear db 'b) COLOREAR A STEVE$'
 juego db 'c) JUGAR AL 3 EN RAYA$'
 salir db 'X) SALIR$'
@@ -60,6 +61,7 @@ ale db 'Jos',82h,' Alejandro Sampablo Mart', 0A1h ,'nez$'
 daniel db 'Sergio Daniel Chiquito Zu', 00F1h ,'iga$'
 programa db 'Programa Tope de Power$'
 tecla db 'Pulse cualquier tecla para continuar...$'
+volverFig db 'Pulse cualquier tecla para volver...$'
 volver_menu db 'Z) VOLVER AL MEN',00E9h,' PRINCIPAL$'
 bienvenidoColorear db '----------------BIENVENIDO A DIBUJAR A STEVE--------------------$'
 opcionesCabello db '¿Que color de pelo deseas?$'
@@ -91,6 +93,8 @@ gatitoLinea8 db '     \_/     ', 0Dh, 0Ah, '$'
 colorCabello db 0
 colorPlayera db 0
 colorPantalon db 0
+
+TopY dw 10 
 
 .CODE
 inicio:
@@ -177,25 +181,93 @@ dibujar:
 	Imprimir 10,15, figura1
 	Imprimir 12,15, figura2
 	Imprimir 14,15, figura3
-	Imprimir 16,15, volver_menu
+	Imprimir 16,15, figura4
+	Imprimir 18,15, volver_menu
 esperar_tecla2:
 	mov ah, 00h
 	int 16h
 	cmp al, 'A'
-	je dibujarTriangulo
+	je dibujarTriangulo_continue
 	cmp al, 'a'
-	je dibujarTriangulo
+	je dibujarTriangulo_continue
+	cmp al, 'B'
+	je dibujarCuadrado_continue
+	cmp al, 'b'
+	je dibujarCuadrado_continue
+	cmp al, 'C'
+	je dibujarRectangulo
+	cmp al, 'c'
+	je dibujarRectangulo
+	cmp al, 'D'
+	je dibujarRombo
+	cmp al, 'd'
+	je dibujarRombo
 	cmp al, 'Z';
 	je MENU2_CONTINUE
 	cmp al, 'z'
 	je MENU2_CONTINUE
 	jmp esperar_tecla2
 
-dibujarTriangulo:
-	LimpiarPantalla 87h
+dibujarTriangulo_continue:
+	jmp dibujarTriangulo
+dibujarCuadrado_continue:
+	jmp dibujarCuadrado
+
+MENU2_CONTINUE:
+	jmp MENU2
+
+dibujarRectangulo:
+	LimpiarPantalla 07h
+	Barra 40h, 011DH, 1531h;
+	Imprimir 23, 10, volverFig
 	mov ah, 00h
 	int 16h
 	JMP dibujar
+
+dibujarRombo:
+	LimpiarPantalla 07h
+	Barra 20h, 0920H, 1128h;
+	Barra 20h, 0A1FH, 1029h;
+	Barra 20h, 0821H, 1227h;
+	Barra 20h, 0B1EH, 0F2Ah;
+	Barra 20h, 0722H, 1326h;
+	Barra 20h, 0C1DH, 0E2Bh;
+	Barra 20h, 0623H, 1425h;
+	Barra 20h, 0D1CH, 0D2Ch;
+	Barra 20h, 0524H, 1524h;
+	Imprimir 23, 10, volverFig
+	mov ah, 00h
+	int 16h
+	JMP dibujar
+
+dibujarCuadrado:
+LimpiarPantalla 07h
+	Barra 30h, 011DH, 1545h;
+	Imprimir 23, 10, volverFig
+	mov ah, 00h
+	int 16h
+	JMP dibujar
+
+dibujarTriangulo:
+LimpiarPantalla 07h
+	Barra 50h, 1319H, 1333h;
+	Barra 50h, 121AH, 1232h;
+	Barra 50h, 111BH, 1131h;
+	Barra 50h, 101CH, 1030h;
+	Barra 50h, 0F1DH, 0F2Fh;
+	Barra 50h, 0E1EH, 0E2Eh;
+	Barra 50h, 0D1FH, 0D2Dh;
+	Barra 50h, 0C20H, 0C2Ch;
+	Barra 50h, 0B21H, 0B2Bh;
+	Barra 50h, 0A22H, 0A2Ah;
+	Barra 50h, 0923H, 0929h;
+	Barra 50h, 0824H, 0828h;
+	Barra 50h, 0725H, 0727h;
+	Barra 50h, 0626H, 00626h;
+	Imprimir 22, 10, volverFig
+	mov ah, 00h
+	int 16h
+	jmp dibujar
 linea2:
 	inc dx
 	int 10h
@@ -205,10 +277,6 @@ linea2:
 	mov ax, 03h
 	int 10h
 	jmp dibujar
-
-MENU2_CONTINUE:
-	jmp MENU2
-
 STEVE_DIBUJO:
 	LimpiarPantalla 47h
 	Imprimir 8,10, bienvenidoColorear
@@ -315,6 +383,14 @@ fin:
 	Barra 00h, 0721h, 0721h
 	Barra 00h, 0723h, 0723h
 	Barra 00h, 0921h, 0922h
+	;FLOR
+	Barra 4Ah, 0C04h, 0D08h
+	Barra 4Ah, 0B04h, 0B04h
+	Barra 4Ah, 0B06h, 0B06h
+	Barra 4Ah, 0B08h, 0B08h
+	Barra 4Ah, 0E05h, 0E07h
+	Barra 2Ah, 0F06h, 1206h
+	Barra 2Ah, 1005h, 1007h
 	Imprimir 23,10, volverDibujar
 	mov ah, 00h
 	int 16h
